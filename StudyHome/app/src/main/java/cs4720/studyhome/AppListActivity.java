@@ -3,13 +3,14 @@ package cs4720.studyhome;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -26,6 +27,10 @@ public class AppListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_list);
+
+        loadApps();
+        loadListView();
+        addClickListener();
     }
     private PackageManager manager;
     private List<AppDetail> apps;
@@ -41,7 +46,12 @@ public class AppListActivity extends AppCompatActivity {
             AppDetail app = new AppDetail();
             app.label = ri.loadLabel(manager);
             app.name = ri.activityInfo.packageName;
-            app.icon = ri.activityInfo.loadIcon(manager);
+
+            Drawable drawable = ri.activityInfo.loadIcon(manager);
+            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+// Scale it to 50 x 50
+            Drawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 150, 150, true));
+            app.icon = d;
             apps.add(app);
         }
     }
@@ -73,5 +83,15 @@ public class AppListActivity extends AppCompatActivity {
         };
 
         list.setAdapter(adapter);
+    }
+    private void addClickListener(){
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> av, View v, int pos,
+                                    long id) {
+                Intent i = manager.getLaunchIntentForPackage(apps.get(pos).name.toString());
+                AppListActivity.this.startActivity(i);
+            }
+        });
     }
 }
