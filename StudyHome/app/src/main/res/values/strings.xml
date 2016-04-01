@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Study Home</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="title_activity_app_list">AppListActivity</string>
+</resources>
