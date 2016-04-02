@@ -7,6 +7,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.ViewGroup;
+
+import org.json.JSONObject;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -16,6 +19,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
+        ViewGroup weatherwidget = (ViewGroup) getLayoutInflater().inflate(R.layout.weather_widget, null);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         final Intent i = new Intent(this, AppListActivity.class);
@@ -27,6 +31,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
+
     public void showApps(View v){
 
     }
