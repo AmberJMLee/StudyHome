@@ -17,6 +17,9 @@
         android:id="@+id/item_app_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textSize="50dp"
+        android:textColor="#FFFFFF"
         android:layout_toRightOf="@+id/item_app_icon"
         android:paddingLeft="10dp"
         />
@@ -26,6 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/item_app_label"
+        android:textColor="#FFFFFF"
         android:layout_toRightOf="@+id/item_app_icon"
         android:paddingLeft="10dp"
         />

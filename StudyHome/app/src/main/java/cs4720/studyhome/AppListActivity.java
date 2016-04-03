@@ -8,10 +8,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,7 +24,7 @@ import java.util.List;
 
 
 public class AppListActivity extends AppCompatActivity {
-
+    public static final String TAG = "LIST";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +48,8 @@ public class AppListActivity extends AppCompatActivity {
             AppDetail app = new AppDetail();
             app.label = ri.loadLabel(manager);
             app.name = ri.activityInfo.packageName;
-
+            //app.type = ri.activityInfo;
+            Log.e(TAG, "Type: " + app.type);
             Drawable drawable = ri.activityInfo.loadIcon(manager);
             Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
 // Scale it to 50 x 50
@@ -56,9 +59,9 @@ public class AppListActivity extends AppCompatActivity {
         }
     }
 
-    private ListView list;
+    private GridView list;
     private void loadListView(){
-        list = (ListView)findViewById(R.id.apps_list);
+        list = (GridView)findViewById(R.id.apps_list);
 
         ArrayAdapter<AppDetail> adapter = new ArrayAdapter<AppDetail>(this,
                 R.layout.list_item,
@@ -75,8 +78,8 @@ public class AppListActivity extends AppCompatActivity {
                 TextView appLabel = (TextView)convertView.findViewById(R.id.item_app_label);
                 appLabel.setText(apps.get(position).label);
 
-                TextView appName = (TextView)convertView.findViewById(R.id.item_app_name);
-                appName.setText(apps.get(position).name);
+                //TextView appName = (TextView)convertView.findViewById(R.id.item_app_name);
+                //appName.setText(apps.get(position).name);
 
                 return convertView;
             }
