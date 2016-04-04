@@ -1,5 +1,6 @@
 package cs4720.studyhome;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -9,6 +10,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -30,10 +33,13 @@ public class AppListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_list);
 
+
         loadApps();
         loadListView();
         addClickListener();
     }
+
+
     private PackageManager manager;
     private List<AppDetail> apps;
     private void loadApps(){
@@ -97,4 +103,5 @@ public class AppListActivity extends AppCompatActivity {
             }
         });
     }
+
 }
