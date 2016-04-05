@@ -33,7 +33,6 @@ public class AppListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_list);
 
-
         loadApps();
         loadListView();
         addClickListener();
@@ -103,5 +102,4 @@ public class AppListActivity extends AppCompatActivity {
             }
         });
     }
-
 }
