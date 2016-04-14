@@ -22,6 +22,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -64,7 +66,25 @@ public class HomeActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         // Display the first 500 characters of the response string.
-                        view.setText("Response is: "+ response.substring(0,50));
+                        //view.setText("Response is: "+ response);
+
+
+                        JSONObject jsonobject;
+                        JSONObject jsonweather;
+                        try {
+                            jsonobject = new JSONObject(response);
+                            String weatherData = jsonobject.getString("weather");
+                            weatherData = weatherData.replace("[", "");
+                            weatherData = weatherData.replace("]", "");
+                            jsonweather = new JSONObject(weatherData);
+                            view.setText(jsonweather.getString("main"));
+
+                        } catch (JSONException e) {
+                            view.setText(response);
+                            e.printStackTrace();
+                        }
+
+                        //.substring(0,50));
                     }
                 }, new Response.ErrorListener() {
             @Override
