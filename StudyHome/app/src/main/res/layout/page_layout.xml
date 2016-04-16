@@ -1,11 +1,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="cs4720.studyhome.PageFragment">
 
     <!-- TODO: Update blank fragment layout -->
-
+<!--
     <TextView
         android:id="@+id/weather"
         android:layout_width="wrap_content"
@@ -28,5 +29,5 @@
         android:textSize="25dp"
         android:layout_below="@+id/weather"
         android:layout_centerHorizontal="true" />
-
+-->
 </RelativeLayout>

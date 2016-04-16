@@ -1,11 +1,15 @@
 package cs4720.studyhome;
 
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -39,8 +43,14 @@ public class PageFragment extends android.support.v4.app.Fragment {
         Bundle bundle = getArguments();
         String page = Integer.toString(bundle.getInt("count"));
         //textview.setText("This is the message: "+message+ "Swipe view page");
+        RelativeLayout relativeLayout = (RelativeLayout) view.findViewById(R.id.layout);
         if (page.equals("1")) {
-            final TextView view2 = (TextView) view.findViewById(R.id.weather);
+            final TextView view2 = new TextView(getContext());//(TextView) view.findViewById(R.id.weather);
+            view2.setTextColor(Color.parseColor("#00CCFF"));
+            view2.setGravity(Gravity.CENTER);
+            view2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 40);
+            final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            //params.addRule(RelativeLayout.)
             RequestQueue queue = Volley.newRequestQueue(getContext());
             String url = "http://api.openweathermap.org/data/2.5/weather?q=Sacramento%2CUS&APPID=b9b4115aed280f077d476837f748b4a4";
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -76,6 +86,7 @@ public class PageFragment extends android.support.v4.app.Fragment {
             });
             // Add the request to the RequestQueue.
             queue.add(stringRequest);
+            relativeLayout.addView(view2, params);
         }
         return view;
     }
