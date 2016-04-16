@@ -6,6 +6,12 @@
     tools:context="cs4720.studyhome.PageFragment">
 
     <!-- TODO: Update blank fragment layout -->
+    <GridView
+        android:id="@+id/apps_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+    </GridView>
 <!--
     <TextView
         android:id="@+id/weather"
