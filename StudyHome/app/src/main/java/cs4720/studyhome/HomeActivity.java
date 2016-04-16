@@ -81,6 +81,14 @@ public class HomeActivity extends FragmentActivity {
             }
         });
     }
+
+    public void onClick(View v){
+        if(v.getId() == R.id.create_button){
+            //handle the click here
+            Intent intent = new Intent(this, CreateGroupActivity.class);
+            startActivity(intent);
+        }
+    }
     private void retrieveWeather()  {
 //        try {
             String url = "http://api.openweathermap.org/data/2.5/weather?q=Sacramento%2CUS&APPID=b9b4115aed280f077d476837f748b4a4";
@@ -91,6 +99,7 @@ public class HomeActivity extends FragmentActivity {
 //            Log.e("ERROR:", "IOERRROOOOOORRRR!!!!!!!!!!");
 //        }
     }
+
     public static JSONObject getJSON() {
         return null;
     }

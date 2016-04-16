@@ -6,4 +6,12 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="join">Join a Study Group</string>
+    <string name="create">Create a Study Group</string>
+    <string name="title_activity_join_group">JoinGroupActivity</string>
+    <string name="signup">Sign Up</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_create_group">CreateGroupActivity</string>
+    <string name="personname">Your Name</string>
+    <string name="classname">Class Name (i.e. CS 2150)</string>
+    <string name="groupname">Group Name</string>
 </resources>
