@@ -79,9 +79,9 @@ public class AppListActivity extends AppCompatActivity {
             app.categories = intent.getCategories();
             System.out.println( (String)app.categories.toArray()[0]);
             System.out.println(intent.getAction() == Intent.ACTION_AIRPLANE_MODE_CHANGED);
-            if (intent.getAction() == Intent.CATEGORY_APP_BROWSER) {
+            //if (intent.getAction() == Intent.CATEGORY_APP_BROWSER) {
                 apps.add(app);
-            }
+            //}
         }
     }
 
