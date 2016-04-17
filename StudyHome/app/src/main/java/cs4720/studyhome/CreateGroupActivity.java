@@ -41,7 +41,7 @@ public class CreateGroupActivity extends Activity implements View.OnClickListene
         private int success;//to determine JSON signal insert success/fail
 
         // url to insert new idiom (change accordingly)
-        private static String url_insert_new = "http://localhost/Study_Home/init.php";
+        private static String url_insert_new = "http://plato.cs.virginia.edu/~ajl4cf/init.php";
 
         // JSON Node names
         private static final String TAG_SUCCESS = "success";

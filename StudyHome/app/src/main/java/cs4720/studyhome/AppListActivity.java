@@ -2,6 +2,7 @@ package cs4720.studyhome;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
@@ -32,7 +33,7 @@ public class AppListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_list);
-
+        Log.e("HELLO!", "");
         loadApps();
         loadListView();
         addClickListener();
@@ -60,7 +61,27 @@ public class AppListActivity extends AppCompatActivity {
 // Scale it to 50 x 50
             Drawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 150, 150, true));
             app.icon = d;
-            apps.add(app);
+
+            //Trying to add a filter
+            Intent intent = manager.getLaunchIntentForPackage(app.name.toString());
+            Log.e("Action: ", intent.getAction());
+//            Object value;
+//            try {
+//                ApplicationInfo appInfo = getPackageManager().getApplicationInfo(String.valueOf(app.name), PackageManager.GET_META_DATA);
+//
+//                //Get meta value if exits
+//                value = appInfo.metaData.get("meta-name");
+//                Log.e("VALUE IS: ", value.toString());
+//            } catch (PackageManager.NameNotFoundException e) {
+//                Log.e(TAG, "exception occured", e);
+//            }
+            System.out.println("Categories: "+ intent.getCategories().toString());
+            app.categories = intent.getCategories();
+            System.out.println( (String)app.categories.toArray()[0]);
+            System.out.println(intent.getAction() == Intent.ACTION_AIRPLANE_MODE_CHANGED);
+            if (intent.getAction() == Intent.CATEGORY_APP_BROWSER) {
+                apps.add(app);
+            }
         }
     }
 
@@ -98,6 +119,7 @@ public class AppListActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> av, View v, int pos,
                                     long id) {
                 Intent i = manager.getLaunchIntentForPackage(apps.get(pos).name.toString());
+                //Log.e("WOW~", i.getAction());
                 AppListActivity.this.startActivity(i);
             }
         });
