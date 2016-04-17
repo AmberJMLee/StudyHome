@@ -22,6 +22,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -62,6 +63,7 @@ public class AppListActivity extends AppCompatActivity {
             app.icon = d;
             apps.add(app);
         }
+        //Collections.sort(apps);
     }
 
     private GridView list;
@@ -89,7 +91,8 @@ public class AppListActivity extends AppCompatActivity {
                 return convertView;
             }
         };
-
+        Collections.sort(apps);
+        adapter.notifyDataSetChanged();
         list.setAdapter(adapter);
     }
     private void addClickListener(){
