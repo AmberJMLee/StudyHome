@@ -85,8 +85,8 @@ public class HomeActivity extends FragmentActivity {
     public void onClick(View v){
         if(v.getId() == R.id.create_button){
             //handle the click here
-            Intent intent = new Intent(this, CreateGroupActivity.class);
-            startActivity(intent);
+            //Intent intent = new Intent(this, CreateGroupActivity.class);
+            //startActivity(intent);
         }
     }
     private void retrieveWeather()  {
