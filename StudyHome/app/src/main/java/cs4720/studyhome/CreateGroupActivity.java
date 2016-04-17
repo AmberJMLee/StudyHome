@@ -1,149 +1,153 @@
 package cs4720.studyhome;
 
-import android.os.Bundle;
 import android.app.Activity;
-import android.view.Menu;
-import android.view.View.OnClickListener;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.os.AsyncTask;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
-import java.util.ArrayList;
-import java.util.List;
+public class CreateGroupActivity extends Activity {
 
-public class CreateGroupActivity extends Activity implements View.OnClickListener {
+    public static final String PREFS_NAME = "PrefsFile";
 
-        // Progress Dialog
-        private ProgressDialog pDialog;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_create_group);
 
-        JSONParser jsonParser = new JSONParser();
-        private EditText creator;
-        private EditText gName;
-        private EditText classname;
-        private Button createGroup;
-        private int success;//to determine JSON signal insert success/fail
+        // Restore preferences
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        String editTextValue = settings.getString("editTextValue", "none");
 
-        // url to insert new idiom (change accordingly)
-        private static String url_insert_new = "http://localhost/Study_Home/init.php";
+        EditText editText = (EditText)findViewById(R.id.editText);
+        editText.setText(editTextValue);
 
-        // JSON Node names
-        private static final String TAG_SUCCESS = "success";
+        // Restore file
+        String FILENAME = "hello_file";
+        EditText editText2 = (EditText)findViewById(R.id.editText2);
 
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_create_group);
-
-            // Edit Text
-            creator = (EditText) findViewById(R.id.editText);
-            gName = (EditText) findViewById(R.id.editText2);
-            classname = (EditText) findViewById(R.id.editText3);
-            // Save button
-            createGroup = (Button) findViewById(R.id.create);
-            // button click event
-            createGroup.setOnClickListener(this);
-
+        try {
+            FileInputStream fis = openFileInput(FILENAME);
+            StringBuilder builder = new StringBuilder();
+            int ch;
+            while((ch = fis.read()) != -1){
+                builder.append((char)ch);
+            }
+            editText2.setText(builder.toString());
+            fis.close();
+        }catch(Exception e) {
+            Log.e("StorageExample", e.getMessage());
         }
-        @Override
-        public void onClick(View v) {
-            if (v.getId()==R.id.create){
-                //call the InsertNewIdiom thread
-                new InsertNewGroup().execute();
-                if (success==1){
-                    Toast.makeText(getApplicationContext(), "New group saved...", Toast.LENGTH_LONG).show();
-                }else{
-                    Toast.makeText(getApplicationContext(), "New group FAILED to saved...", Toast.LENGTH_LONG).show();
-                }
-            }
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        // Using Preferences
+        // We need an Editor object to make preference changes.
+        // All objects are from android.context.Context
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        EditText editText = (EditText)findViewById(R.id.editText);
+        editor.putString("editTextValue", editText.getText().toString());
+
+        // Commit the edits!
+        editor.commit();
+
+        // Using a file
+        String FILENAME = "hello_file";
+        EditText editText2 = (EditText)findViewById(R.id.editText2);
+        String string = editText2.getText().toString();
+        try {
+            FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            fos.write(string.getBytes());
+            fos.close();
+        }catch(Exception e) {
+            Log.e("StorageExample", e.getMessage());
+        }
+    }
+
+    public void saveToDB(View view) {
+        // Gets the data repository in write mode
+        DatabaseHelper mDbHelper = new DatabaseHelper(this);
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        EditText editText = (EditText)findViewById(R.id.editText);
+        EditText editText2 = (EditText)findViewById(R.id.editText2);
+        String compid = editText.getText().toString();
+        String name = editText2.getText().toString();
+        values.put("compid", compid);
+        values.put("name", name);
+
+        // Insert the new row, returning the primary key value of the new row
+        long newRowId;
+        newRowId = db.insert(
+                "my_table",
+                null,
+                values);
+
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                "compid",
+                "name"
+        };
+
+        // How you want the results sorted in the resulting Cursor
+        String sortOrder =
+                "compid" + " DESC";
+
+        Cursor cursor = db.query(
+                "my_table",  // The table to query
+                projection,  // The columns to return
+                null,        // The columns for the WHERE clause
+                null,        // The values for the WHERE clause
+                null,        // don't group the rows
+                null,        // don't filter by row groups
+                sortOrder    // The sort order
+        );
+
+        //cursor.moveToFirst();
+        while(cursor.moveToNext()) {
+            String currID = cursor.getString(
+                    cursor.getColumnIndexOrThrow("compid")
+            );
+            Log.i("DBData", currID);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
         }
 
-        /**
-         * Background Async Task to Create new Idioms
-         * */
-        class InsertNewGroup extends AsyncTask<String, String, String> {
-            //capture values from EditText
-            String maker = creator.getText().toString();
-            String groupName = gName.getText().toString();
-            String className = classname.getText().toString().replace(" ", "");;
-            String [] separate = className.split("[0-9]+", 2);
-            String classId = separate[0];
-            int classNum = Integer.parseInt(separate[1]);
-            /**
-             * Before starting background thread Show Progress Dialog
-             * */
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                pDialog = new ProgressDialog(CreateGroupActivity.this);
-                pDialog.setMessage("Saving the new group ("+groupName+")...");
-                pDialog.setIndeterminate(false);
-                pDialog.setCancelable(true);
-                pDialog.show();
-            }
-
-            /**
-             * Inserting the new idiom
-             * */
-            protected String doInBackground(String... args) {
-
-
-                // Building Parameters
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("creator", maker));
-                params.add(new BasicNameValuePair("gName", groupName));
-                params.add(new BasicNameValuePair("classID", classId));
-                params.add(new BasicNameValuePair("classNum", String.valueOf(classNum)));
-                // getting JSON Object
-                // Note that create product url accepts GET method
-                JSONObject json = jsonParser.makeHttpRequest(url_insert_new,
-                        "GET", params);
-
-                // check log cat from response
-                Log.d("Add New Group Response", json.toString());
-
-                // check for success tag
-                try {
-                    success = json.getInt(TAG_SUCCESS);
-
-                    if (success == 1) {
-                        // successfully save new idiom
-                    } else {
-                        // failed to add new idiom
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                //return null;
-                return null;
-            }
-
-            /**
-             * After completing background task Dismiss the progress dialog
-             * **/
-            protected void onPostExecute(String file_url) {
-                // dismiss the dialog once done
-                pDialog.dismiss();
-            }
-
-        }
-
+        return super.onOptionsItemSelected(item);
+    }
 }
