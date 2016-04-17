@@ -9,7 +9,7 @@
     android:fitsSystemWindows="true"
     tools:context="cs4720.studyhome.HomeActivity">
 
-    <include layout="@layout/content_home" />
+    <!--<include layout="@layout/content_home" /> -->
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
