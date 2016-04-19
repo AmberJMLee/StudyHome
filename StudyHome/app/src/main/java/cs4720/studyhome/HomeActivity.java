@@ -72,7 +72,7 @@ public class HomeActivity extends FragmentActivity {
 
 
 
-        final Intent i = new Intent(this, AppListActivity.class);
+        final Intent i = new Intent(this, Launchalot.class);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
