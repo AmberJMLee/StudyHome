@@ -1,11 +1,20 @@
 package cs4720.studyhome;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
@@ -16,7 +25,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -36,6 +47,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 //import com.android.volley.RequestQueue;
 //import com.android.volley;
 
@@ -44,6 +56,9 @@ public class HomeActivity extends FragmentActivity {
     String description;
     ActionBar actionbar;
     ViewPager viewpager;
+    ArrayList<Address> addresses;
+    AppLocationService appLocationService;
+    Button butt;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,13 +67,21 @@ public class HomeActivity extends FragmentActivity {
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
         ViewGroup weatherwidget = (ViewGroup) getLayoutInflater().inflate(R.layout.weather_widget, null);
-
+        butt = (Button) findViewById(R.id.create_button);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         actionbar = getActionBar();
         viewpager = (ViewPager) findViewById(R.id.view_pager);
         SwipeAdapter swipeadapter = new SwipeAdapter(getSupportFragmentManager());
         viewpager.setAdapter(swipeadapter);
-
+        Geocoder gCoder = new Geocoder(this);
+        appLocationService = new AppLocationService(
+                HomeActivity.this);
+        //try {
+            //addresses = (ArrayList) gCoder.getFromLocation(123456789, 123456789, 1);
+        //}
+        //catch(IOException e) {
+         ///   e.printStackTrace();
+        //}
 //        JSONObject jsonobject = getJSON();
 //        try {
 //            Log.i("JSON object", jsonobject.toString());
@@ -85,8 +108,23 @@ public class HomeActivity extends FragmentActivity {
     public void onClick(View v){
         if(v.getId() == R.id.create_button){
             //handle the click here
+            Location gpsLocation = appLocationService
+                    .getLocation(LocationManager.GPS_PROVIDER);
+            if (gpsLocation != null) {
+                double latitude = gpsLocation.getLatitude();
+                double longitude = gpsLocation.getLongitude();
+                String result = "Latitude: " + gpsLocation.getLatitude() +
+                        " Longitude: " + gpsLocation.getLongitude();
+                //tvAddress.setText(result);
+                Toast.makeText(this, "country: " + result, Toast.LENGTH_LONG).show();
+            } else {
+                showSettingsAlert();
+            }
+//            if (addresses != null && addresses.size() > 0) {
+//                Toast.makeText(this, "country: " + addresses.get(0).getCountryName(), Toast.LENGTH_LONG).show();
+//            }
             Intent intent = new Intent(this, CreateGroupActivity.class);
-            startActivity(intent);
+            //startActivity(intent);
         }
     }
     private void retrieveWeather()  {
@@ -135,6 +173,44 @@ public class HomeActivity extends FragmentActivity {
 //    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
 //
 //    }
+
+
+    public void showSettingsAlert() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(
+                HomeActivity.this);
+        alertDialog.setTitle("SETTINGS");
+        alertDialog.setMessage("Enable Location Provider! Go to settings menu?");
+        alertDialog.setPositiveButton("Settings",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(
+                                Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        HomeActivity.this.startActivity(intent);
+                    }
+                });
+        alertDialog.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        alertDialog.show();
+    }
+
+private class GeocoderHandler extends Handler {
+    @Override
+    public void handleMessage(Message message) {
+        String locationAddress;
+        switch (message.what) {
+            case 1:
+                Bundle bundle = message.getData();
+                locationAddress = bundle.getString("address");
+                break;
+            default:
+                locationAddress = null;
+        }
+        butt.setText(locationAddress);
+        //Toast.makeText(this, "country: " + locationAddress, Toast.LENGTH_LONG).show();
+    }
 }
-
-
+}
