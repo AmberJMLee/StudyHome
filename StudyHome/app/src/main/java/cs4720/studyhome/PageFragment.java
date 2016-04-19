@@ -4,6 +4,7 @@ package cs4720.studyhome;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -115,6 +116,8 @@ public class PageFragment extends android.support.v4.app.Fragment {
             loadLocationList();
             addClickListener();
         }
+
+
         return view;
     }
     private ArrayList<StudyGroup> studygroups = new ArrayList<StudyGroup>();

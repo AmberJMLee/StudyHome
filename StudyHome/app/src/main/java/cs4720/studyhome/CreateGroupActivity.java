@@ -11,13 +11,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
+
 public class CreateGroupActivity extends Activity {
 
+    Button btnShowLocation;
+    GPSTracker gps;
     public static final String PREFS_NAME = "PrefsFile";
 
     @Override
@@ -48,6 +53,23 @@ public class CreateGroupActivity extends Activity {
         }catch(Exception e) {
             Log.e("StorageExample", e.getMessage());
         }
+
+        btnShowLocation = (Button) findViewById(R.id.show_location);
+        btnShowLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gps = new GPSTracker(CreateGroupActivity.this);
+
+                if (gps.canGetLocation()) {
+                    double longitude = gps.getLongitude();
+                    double latitude = gps.getLatitude();
+
+                    Toast.makeText(getApplicationContext(), "Your location is -\nLat: " + latitude +
+                    "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
     }
 
     @Override
@@ -87,6 +109,7 @@ public class CreateGroupActivity extends Activity {
         ContentValues values = new ContentValues();
         EditText editText = (EditText)findViewById(R.id.editText);
         EditText editText2 = (EditText)findViewById(R.id.editText2);
+
         String compid = editText.getText().toString();
         String name = editText2.getText().toString();
         values.put("compid", compid);
@@ -150,4 +173,5 @@ public class CreateGroupActivity extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }
