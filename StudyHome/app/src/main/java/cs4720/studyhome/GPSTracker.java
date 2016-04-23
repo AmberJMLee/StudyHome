@@ -38,7 +38,7 @@ public class GPSTracker extends Service implements LocationListener {
         getLocation();
     }
 
-    public Location getLocation() {
+    public Location getLocation()  throws SecurityException{
         try {
             locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
 
@@ -94,7 +94,7 @@ public class GPSTracker extends Service implements LocationListener {
         return location;
     }
 
-    public void stopUsingGPS() {
+    public void stopUsingGPS() throws SecurityException{
         if(locationManager != null) {
             locationManager.removeUpdates(GPSTracker.this);
         }
