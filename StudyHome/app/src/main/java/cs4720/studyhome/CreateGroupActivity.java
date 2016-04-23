@@ -46,7 +46,7 @@ public class CreateGroupActivity extends Activity {
         // Restore file
         String FILENAME = "hello_file";
         EditText editText2 = (EditText)findViewById(R.id.editText2);
-
+        final EditText location = (EditText) findViewById(R.id.location);
         try {
             FileInputStream fis = openFileInput(FILENAME);
             StringBuilder builder = new StringBuilder();
@@ -83,6 +83,7 @@ public class CreateGroupActivity extends Activity {
                         String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
                         Toast.makeText(getApplicationContext(), "Your location is -\nCity: " + city +
                                 "\nState: " + state, Toast.LENGTH_LONG).show();
+                        location.setText(address);
 
                     }
                     catch (Exception e) {
