@@ -83,13 +83,13 @@ public class CreateGroupActivity extends Activity {
                         String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
                         Toast.makeText(getApplicationContext(), "Your location is -\nCity: " + city +
                                 "\nState: " + state, Toast.LENGTH_LONG).show();
-                        location.setText(address);
+
+                        location.setText(address + "\n" + city + ", " + state);
 
                     }
                     catch (Exception e) {
                         e.printStackTrace();
                     }
-
                 }
             }
         });
@@ -133,11 +133,15 @@ public class CreateGroupActivity extends Activity {
         ContentValues values = new ContentValues();
         EditText editText = (EditText)findViewById(R.id.editText);
         EditText editText2 = (EditText)findViewById(R.id.editText2);
+        EditText editText3 = (EditText) findViewById(R.id.location);
 
         String compid = editText.getText().toString();
         String name = editText2.getText().toString();
+        String location = editText3.getText().toString();
+
         values.put("compid", compid);
         values.put("name", name);
+        values.put("location", location);
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId;
@@ -150,7 +154,8 @@ public class CreateGroupActivity extends Activity {
         // you will actually use after this query.
         String[] projection = {
                 "compid",
-                "name"
+                "name",
+                "location"
         };
 
         // How you want the results sorted in the resulting Cursor
