@@ -5,9 +5,11 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
 
-    <TextView android:text="Save your text below!" android:layout_width="wrap_content"
+    <TextView android:text="Create Study Group" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textView" />
+        android:id="@+id/textView"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/button" />
 
     <EditText
         android:layout_width="fill_parent"
@@ -48,7 +50,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Show Location"
-        />
+        android:layout_below="@+id/location"
+        android:layout_centerHorizontal="true" />
 
     <!-- android:background="@android:drawable/btn_dropdown" -->
 
