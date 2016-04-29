@@ -28,7 +28,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 public class Launchalot extends ListActivity {
@@ -45,7 +48,38 @@ public class Launchalot extends ListActivity {
     main.addCategory(Intent.CATEGORY_LAUNCHER);
 
     List<ResolveInfo> launchables=pm.queryIntentActivities(main, 0);
-    
+
+    SimpleDateFormat sdf = new SimpleDateFormat("EEEE");
+    Date d = new Date();
+    String dayOfTheWeek = sdf.format(d);
+    if (dayOfTheWeek.equals("Monday") || dayOfTheWeek.equals("Tuesday") || dayOfTheWeek.equals("Wednesday") ||
+            dayOfTheWeek.equals("Thursday") || dayOfTheWeek.equals("Friday")) {
+      for (Iterator<ResolveInfo> iter = launchables.listIterator(); iter.hasNext(); ) {
+        ResolveInfo info = iter.next();
+        if (info.loadLabel(pm).toString().equals("Facebook") ||
+                info.loadLabel(pm).toString().equals("YouTube") ||
+                info.loadLabel(pm).toString().equals("Snapchat") ||
+                info.loadLabel(pm).toString().equals("Roll the Ball") ||
+                info.loadLabel(pm).toString().equals("Play Games") ||
+                info.loadLabel(pm).toString().equals("Chess Runner") ||
+                info.loadLabel(pm).toString().equals("Angry Birds") ||
+                info.loadLabel(pm).toString().equals("Temple Run") ||
+                info.loadLabel(pm).toString().equals("Tumblr") ||
+                info.loadLabel(pm).toString().equals("Twitter") ||
+                info.loadLabel(pm).toString().equals("Play Movies & TV") ||
+                info.loadLabel(pm).toString().equals("Miitomo") ||
+                info.loadLabel(pm).toString().equals("Fruit Ninja Free") ||
+                info.loadLabel(pm).toString().equals("Fruit Ninja") ||
+                info.loadLabel(pm).toString().equals("Instagram") ||
+                info.loadLabel(pm).toString().equals("Pinterest") ||
+                info.loadLabel(pm).toString().equals("Google+") ||
+                info.loadLabel(pm).toString().equals("Flow Free") ||
+                info.loadLabel(pm).toString().equals("Glow Hockey") ||
+                info.loadLabel(pm).toString().equals("Plague Inc.")) {
+          iter.remove();
+        }
+      }
+    }
     Collections.sort(launchables,
                      new ResolveInfo.DisplayNameComparator(pm));
     
