@@ -32,10 +32,10 @@ import java.util.Locale;
 
 
 public class CreateGroupActivity extends Activity {
-    int coarsePermissionCheck = ContextCompat.checkSelfPermission(CreateGroupActivity.this,
+   /* int coarsePermissionCheck = ContextCompat.checkSelfPermission(CreateGroupActivity.this,
             Manifest.permission.ACCESS_COARSE_LOCATION);
     int finePermissionCheck = ContextCompat.checkSelfPermission(CreateGroupActivity.this,
-            Manifest.permission.ACCESS_FINE_LOCATION);
+            Manifest.permission.ACCESS_FINE_LOCATION);*/
     Button btnShowLocation;
     GPSTracker gps;
     public static final String PREFS_NAME = "PrefsFile";
@@ -51,52 +51,7 @@ public class CreateGroupActivity extends Activity {
         String editTextValue = settings.getString("editTextValue", "none");
 
 
-        if (ContextCompat.checkSelfPermission(CreateGroupActivity.this,
-                Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
 
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(CreateGroupActivity.this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                // Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(CreateGroupActivity.this,
-                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                        0);
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-            }
-        }
-        if (ContextCompat.checkSelfPermission(CreateGroupActivity.this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(CreateGroupActivity.this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-                // Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(CreateGroupActivity.this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                       1);
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-            }
-        }
         EditText editText = (EditText)findViewById(R.id.editText);
         editText.setText(editTextValue);
 
@@ -121,6 +76,53 @@ public class CreateGroupActivity extends Activity {
         btnShowLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.e("clicking", "clicking");
+               /* if (ContextCompat.checkSelfPermission(CreateGroupActivity.this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+                    // Should we show an explanation?
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(CreateGroupActivity.this,
+                            Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                        // Show an expanation to the user *asynchronously* -- don't block
+                        // this thread waiting for the user's response! After the user
+                        // sees the explanation, try again to request the permission.
+
+                    } else {
+
+                        // No explanation needed, we can request the permission.
+                        ActivityCompat.requestPermissions(CreateGroupActivity.this,
+                                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                                0);
+
+                        // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                        // app-defined int constant. The callback method gets the
+                        // result of the request.
+                    }
+                }
+                if (ContextCompat.checkSelfPermission(CreateGroupActivity.this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+                    // Should we show an explanation?
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(CreateGroupActivity.this,
+                            Manifest.permission.ACCESS_FINE_LOCATION)) {
+                        // Show an expanation to the user *asynchronously* -- don't block
+                        // this thread waiting for the user's response! After the user
+                        // sees the explanation, try again to request the permission.
+
+                    } else {
+
+                        // No explanation needed, we can request the permission.
+                        ActivityCompat.requestPermissions(CreateGroupActivity.this,
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                1);
+
+                        // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                        // app-defined int constant. The callback method gets the
+                        // result of the request.
+                    }
+                }*/
                 gps = new GPSTracker(CreateGroupActivity.this);
 
                 if (gps.canGetLocation()) {
@@ -131,7 +133,7 @@ public class CreateGroupActivity extends Activity {
                     };
                     geocoder = new Geocoder(CreateGroupActivity.this, Locale.getDefault());
                     try {
-                      //  Toast.makeText(getApplicationContext(), "In here" +latitude, Toast.LENGTH_LONG).show();
+                      //Toast.makeText(getApplicationContext(), "In here" +latitude, Toast.LENGTH_LONG).show();
                         addresses = geocoder.getFromLocation(latitude, longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
                         String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
                         String city = addresses.get(0).getLocality();
@@ -139,8 +141,9 @@ public class CreateGroupActivity extends Activity {
                         String country = addresses.get(0).getCountryName();
                         String postalCode = addresses.get(0).getPostalCode();
                         String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
-                        Toast.makeText(getApplicationContext(), "Your location is -\nCity: " + city +
-                                "\nState: " + state, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Your location", Toast.LENGTH_LONG).show();
+                              //  " is -\nCity: " + city +
+                              //  "\nState: " + state, Toast.LENGTH_LONG).show();
 
                         location.setText(address + "\n" + city + ", " + state);
                         System.out.println(city);
@@ -155,7 +158,7 @@ public class CreateGroupActivity extends Activity {
 
     }
 
-    @Override
+  /*  @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         Log.e("requesting permission", "requesting permission");
         switch (requestCode) {
@@ -192,7 +195,7 @@ public class CreateGroupActivity extends Activity {
             // other 'case' lines to check for other
             // permissions this app might request
         }
-    }
+    }*/
     @Override
     protected void onStop() {
         super.onStop();
