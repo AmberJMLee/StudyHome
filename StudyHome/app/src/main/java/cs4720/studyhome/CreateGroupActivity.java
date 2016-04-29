@@ -10,7 +10,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -19,8 +22,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.drive.Permission;
+import com.google.android.gms.location.FusedLocationProviderApi;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import java.io.FileInputStream;
@@ -31,14 +40,27 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class CreateGroupActivity extends Activity {
-   /* int coarsePermissionCheck = ContextCompat.checkSelfPermission(CreateGroupActivity.this,
-            Manifest.permission.ACCESS_COARSE_LOCATION);
-    int finePermissionCheck = ContextCompat.checkSelfPermission(CreateGroupActivity.this,
-            Manifest.permission.ACCESS_FINE_LOCATION);*/
+
+public class CreateGroupActivity extends Activity  implements com.google.android.gms.location.LocationListener, GoogleApiClient.ConnectionCallbacks
+        , GoogleApiClient.OnConnectionFailedListener{
+
     Button btnShowLocation;
     GPSTracker gps;
+    TextView latitudeText;
+    TextView longitudeText;
+    LocationManager locationmanager;
+    private LocationRequest locationRequest;
+    private Double myLatitude;
+    private Double myLongitude;
+    private FusedLocationProviderApi locationProvider=LocationServices.FusedLocationApi;
+    private GoogleApiClient googleApiClient;
+
     public static final String PREFS_NAME = "PrefsFile";
+
+    String [] PermissionsLocation =  { Manifest.permission.ACCESS_COARSE_LOCATION,
+           Manifest.permission.ACCESS_FINE_LOCATION};
+
+    final int RequestLocationId = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,10 +72,20 @@ public class CreateGroupActivity extends Activity {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         String editTextValue = settings.getString("editTextValue", "none");
 
-
-
         EditText editText = (EditText)findViewById(R.id.editText);
         editText.setText(editTextValue);
+        latitudeText=(TextView) findViewById(R.id.latitude);
+        longitudeText=(TextView) findViewById(R.id.longitude);
+
+        googleApiClient=new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+        locationRequest=new LocationRequest();
+        locationRequest.setInterval(60 * 1000); //1min=60000ms
+        locationRequest.setFastestInterval(15 * 1000);//15s
+        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
         // Restore file
         String FILENAME = "hello_file";
@@ -76,77 +108,38 @@ public class CreateGroupActivity extends Activity {
         btnShowLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
                 Log.e("clicking", "clicking");
-               /* if (ContextCompat.checkSelfPermission(CreateGroupActivity.this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
 
-                    // Should we show an explanation?
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(CreateGroupActivity.this,
-                            Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                        // Show an expanation to the user *asynchronously* -- don't block
-                        // this thread waiting for the user's response! After the user
-                        // sees the explanation, try again to request the permission.
-
-                    } else {
-
-                        // No explanation needed, we can request the permission.
-                        ActivityCompat.requestPermissions(CreateGroupActivity.this,
-                                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                                0);
-
-                        // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                        // app-defined int constant. The callback method gets the
-                        // result of the request.
-                    }
-                }
-                if (ContextCompat.checkSelfPermission(CreateGroupActivity.this,
-                        Manifest.permission.ACCESS_FINE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-
-                    // Should we show an explanation?
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(CreateGroupActivity.this,
-                            Manifest.permission.ACCESS_FINE_LOCATION)) {
-                        // Show an expanation to the user *asynchronously* -- don't block
-                        // this thread waiting for the user's response! After the user
-                        // sees the explanation, try again to request the permission.
-
-                    } else {
-
-                        // No explanation needed, we can request the permission.
-                        ActivityCompat.requestPermissions(CreateGroupActivity.this,
-                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                1);
-
-                        // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                        // app-defined int constant. The callback method gets the
-                        // result of the request.
-                    }
-                }*/
                 gps = new GPSTracker(CreateGroupActivity.this);
 
                 if (gps.canGetLocation()) {
                     double longitude = gps.getLongitude();
                     double latitude = gps.getLatitude();
+                    EditText addres = (EditText) findViewById(R.id.location);
+                    Location location = new Location("newLoc");
+                    location.setLatitude(latitude);
+                    location.setLongitude(longitude);
+                    onLocationChanged(location);
                     Geocoder geocoder;
                     List<Address> addresses; {
                     };
                     geocoder = new Geocoder(CreateGroupActivity.this, Locale.getDefault());
                     try {
                       //Toast.makeText(getApplicationContext(), "In here" +latitude, Toast.LENGTH_LONG).show();
-                        addresses = geocoder.getFromLocation(latitude, longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                        addresses = geocoder.getFromLocation(myLatitude, myLongitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
                         String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
                         String city = addresses.get(0).getLocality();
                         String state = addresses.get(0).getAdminArea();
                         String country = addresses.get(0).getCountryName();
                         String postalCode = addresses.get(0).getPostalCode();
                         String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
-                        Toast.makeText(getApplicationContext(), "Your location", Toast.LENGTH_LONG).show();
-                              //  " is -\nCity: " + city +
-                              //  "\nState: " + state, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Your location is -\nCity: " + city +
+                               "\nState: " + state, Toast.LENGTH_LONG).show();
 
-                        location.setText(address + "\n" + city + ", " + state);
-                        System.out.println(city);
+                      addres.setText(address + "\n" + city + ", " + state);
+                      //  System.out.println(city);
 
                     }
                     catch (Exception e) {
@@ -158,44 +151,6 @@ public class CreateGroupActivity extends Activity {
 
     }
 
-  /*  @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        Log.e("requesting permission", "requesting permission");
-        switch (requestCode) {
-            case 0: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-
-                } else {
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
-            case 1: {
-                if (grantResults.length > 1
-                        && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-
-                } else {
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-
-            }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
-        }
-    }*/
     @Override
     protected void onStop() {
         super.onStop();
@@ -279,6 +234,8 @@ public class CreateGroupActivity extends Activity {
             );
             Log.i("DBData", currID);
         }
+
+        googleApiClient.disconnect();
     }
 
     @Override
@@ -287,6 +244,7 @@ public class CreateGroupActivity extends Activity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -301,6 +259,72 @@ public class CreateGroupActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        myLatitude=location.getLatitude();
+        myLongitude=location.getLongitude();
+        //set the textViews
+        latitudeText.setText("Latitude :" + String.valueOf(myLatitude));
+        longitudeText.setText("Longitude :" + String.valueOf(myLongitude));
+
+
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        requestLocationUpdates();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        googleApiClient.connect();//gets out client connected
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (googleApiClient.isConnected()){
+            requestLocationUpdates();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient,
+                (com.google.android.gms.location.LocationListener) this);
+    }
+
+
+    private void requestLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED )
+        {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+
+            return;
+        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient,locationRequest,
+                (com.google.android.gms.location.LocationListener) this);
     }
 
 }
