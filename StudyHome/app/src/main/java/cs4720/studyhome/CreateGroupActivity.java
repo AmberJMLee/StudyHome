@@ -1,14 +1,18 @@
 package cs4720.studyhome;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +20,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.google.android.gms.location.LocationServices;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,13 +32,17 @@ import java.util.Locale;
 
 
 public class CreateGroupActivity extends Activity {
-
+    int coarsePermissionCheck = ContextCompat.checkSelfPermission(CreateGroupActivity.this,
+            Manifest.permission.ACCESS_COARSE_LOCATION);
+    int finePermissionCheck = ContextCompat.checkSelfPermission(CreateGroupActivity.this,
+            Manifest.permission.ACCESS_FINE_LOCATION);
     Button btnShowLocation;
     GPSTracker gps;
     public static final String PREFS_NAME = "PrefsFile";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
 
@@ -40,6 +50,53 @@ public class CreateGroupActivity extends Activity {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         String editTextValue = settings.getString("editTextValue", "none");
 
+
+        if (ContextCompat.checkSelfPermission(CreateGroupActivity.this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(CreateGroupActivity.this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(CreateGroupActivity.this,
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                        0);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        }
+        if (ContextCompat.checkSelfPermission(CreateGroupActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(CreateGroupActivity.this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(CreateGroupActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                       1);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        }
         EditText editText = (EditText)findViewById(R.id.editText);
         editText.setText(editTextValue);
 
@@ -74,6 +131,7 @@ public class CreateGroupActivity extends Activity {
                     };
                     geocoder = new Geocoder(CreateGroupActivity.this, Locale.getDefault());
                     try {
+                      //  Toast.makeText(getApplicationContext(), "In here" +latitude, Toast.LENGTH_LONG).show();
                         addresses = geocoder.getFromLocation(latitude, longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
                         String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
                         String city = addresses.get(0).getLocality();
@@ -85,6 +143,7 @@ public class CreateGroupActivity extends Activity {
                                 "\nState: " + state, Toast.LENGTH_LONG).show();
 
                         location.setText(address + "\n" + city + ", " + state);
+                        System.out.println(city);
 
                     }
                     catch (Exception e) {
@@ -96,6 +155,44 @@ public class CreateGroupActivity extends Activity {
 
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        Log.e("requesting permission", "requesting permission");
+        switch (requestCode) {
+            case 0: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+            case 1: {
+                if (grantResults.length > 1
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
     @Override
     protected void onStop() {
         super.onStop();
